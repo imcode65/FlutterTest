@@ -35,12 +35,25 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _textEditingController = TextEditingController();
   List<dynamic> _repositories = [];
   Future<List<dynamic>>? _futureRepositories;
+  String? _searchInputError = null;
 
   Future<List<dynamic>> searchRepositories(String keywords) async {
     String url = "https://api.github.com/search/repositories?q=$keywords";
     http.Response response = await http.get(Uri.parse(url));
     Map<String, dynamic> json = jsonDecode(response.body);
     return json['items'];
+  }
+
+  void _validateInput(String input) {
+    if (input.trim().isEmpty) {
+      setState(() {
+        _searchInputError = "Please enter some keywords";
+      });
+    } else {
+      setState(() {
+        _searchInputError = null;
+      });
+    }
   }
 
   @override
@@ -56,9 +69,11 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             TextField(
               controller: _textEditingController,
-              decoration: const InputDecoration(
+              onChanged: (input) => _validateInput(input),
+              decoration: InputDecoration(
                 labelText: 'Keywords',
                 hintText: 'Enter some keywords',
+                errorText: _searchInputError,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -66,9 +81,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               onPressed: () {
                 String keywords = _textEditingController.text;
-                setState(() {
-                  _futureRepositories = searchRepositories(keywords);
-                });
+                _validateInput(keywords);
+                if (keywords.trim().isNotEmpty) {
+                  setState(() {
+                    _futureRepositories = searchRepositories(keywords);
+                  });
+                }
               },
               child: Text('Search'),
             ),
@@ -94,26 +112,30 @@ class _MyHomePageState extends State<MyHomePage> {
                   return Text("Error: ${snapshot.error}");
                 } else {
                   _repositories = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: _repositories.length,
-                    itemBuilder: (context, index) {
-                      final repository = _repositories[index];
-                      return ListTile(
-                        title: Text(repository["full_name"]),
-                        subtitle:
-                            Text(repository["description"] ?? "No description"),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  RepositoryDetails(repository: repository),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  );
+                  if (_repositories.isEmpty) {
+                    return Center(child: Text("Not Found Repository"));
+                  } else {
+                    return ListView.builder(
+                      itemCount: _repositories.length,
+                      itemBuilder: (context, index) {
+                        final repository = _repositories[index];
+                        return ListTile(
+                          title: Text(repository["full_name"]),
+                          subtitle: Text(
+                              repository["description"] ?? "No description"),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    RepositoryDetails(repository: repository),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  }
                 }
               },
             ),
