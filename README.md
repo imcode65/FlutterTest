@@ -1,16 +1,24 @@
-# flutter2
+# GitHub Repository Search
 
-A new Flutter project.
+A Flutter application that allows users to search for GitHub repositories by keywords.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Search for GitHub repositories by entering keywords
+- Display a list of matched repositories
+- View details of a specific repository by tapping on the list item
 
-A few resources to get you started if this is your first Flutter project:
+## To use this app:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Clone the project from the GitHub repository.
+- Run flutter pub get in the project directory to download the required dependencies.
+- Execute flutter run to launch the application in an emulator or a connected device
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Dependencies
+
+This project depends on the following packages:
+
+- Flutter SDK
+- http package
+
+To add these dependencies to your project, include the following lines in your `pubspec.yaml`:
