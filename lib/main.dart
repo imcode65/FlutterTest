@@ -12,12 +12,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Test',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Github Search Home Page'),
+      home: const MyHomePage(title: 'Github Search Page'),
     );
   }
 }
@@ -35,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _textEditingController = TextEditingController();
   List<dynamic> _repositories = [];
   Future<List<dynamic>>? _futureRepositories;
-  String? _searchInputError = null;
+  String? _searchInputError;
 
   Future<List<dynamic>> searchRepositories(String keywords) async {
     String url = "https://api.github.com/search/repositories?q=$keywords";
@@ -44,6 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return json['items'];
   }
 
+  // Input Validation
   void _validateInput(String input) {
     if (input.trim().isEmpty) {
       setState(() {
@@ -98,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // Repository List
   Widget _buildRepositoriesList() {
     return Expanded(
       child: _futureRepositories == null
@@ -119,19 +121,25 @@ class _MyHomePageState extends State<MyHomePage> {
                       itemCount: _repositories.length,
                       itemBuilder: (context, index) {
                         final repository = _repositories[index];
-                        return ListTile(
-                          title: Text(repository["full_name"]),
-                          subtitle: Text(
-                              repository["description"] ?? "No description"),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    RepositoryDetails(repository: repository),
-                              ),
-                            );
-                          },
+                        return Card(
+                          // Add Card widget
+                          elevation: 4, // Adjust elevation for shadow
+                          margin:
+                              EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+                          child: ListTile(
+                            title: Text(repository["full_name"]),
+                            subtitle: Text(
+                                repository["description"] ?? "No description"),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      RepositoryDetails(repository: repository),
+                                ),
+                              );
+                            },
+                          ),
                         );
                       },
                     );
@@ -143,6 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+// Repository Detail
 class RepositoryDetails extends StatelessWidget {
   final Map<String, dynamic> repository;
 
