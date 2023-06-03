@@ -9,27 +9,11 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -118,12 +102,64 @@ class _MyHomePageState extends State<MyHomePage> {
                         title: Text(repository["full_name"]),
                         subtitle:
                             Text(repository["description"] ?? "No description"),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  RepositoryDetails(repository: repository),
+                            ),
+                          );
+                        },
                       );
                     },
                   );
                 }
               },
             ),
+    );
+  }
+}
+
+class RepositoryDetails extends StatelessWidget {
+  final Map<String, dynamic> repository;
+
+  const RepositoryDetails({required this.repository});
+
+  @override
+  Widget build(BuildContext context) {
+    String? language = repository['language'];
+    int stars = repository['stargazers_count'];
+    int watchers = repository['watchers_count'];
+    int forks = repository['forks'];
+    int issues = repository['open_issues'];
+    String ownerIconUrl = repository['owner']['avatar_url'];
+
+    return Scaffold(
+      appBar: AppBar(title: Text("Repository Details")),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Name: ${repository['full_name']}",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            SizedBox(height: 16),
+            CircleAvatar(
+                backgroundImage: NetworkImage(ownerIconUrl), radius: 36),
+            SizedBox(height: 8),
+            language != null ? Text('Language: $language') : Container(),
+            SizedBox(height: 8),
+            Text('Stars: $stars'),
+            SizedBox(height: 8),
+            Text('Watchers: $watchers'),
+            SizedBox(height: 8),
+            Text('Forks: $forks'),
+            SizedBox(height: 8),
+            Text('Issues: $issues'),
+          ],
+        ),
+      ),
     );
   }
 }
