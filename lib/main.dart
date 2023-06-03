@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
@@ -75,10 +75,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 labelText: 'Keywords',
                 hintText: 'Enter some keywords',
                 errorText: _searchInputError,
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 String keywords = _textEditingController.text;
@@ -89,9 +89,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
                 }
               },
-              child: Text('Search'),
+              child: const Text('Search'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildRepositoriesList(),
           ],
         ),
@@ -109,13 +109,13 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (BuildContext context,
                   AsyncSnapshot<List<dynamic>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Text("Error: ${snapshot.error}");
                 } else {
                   _repositories = snapshot.data!;
                   if (_repositories.isEmpty) {
-                    return Center(child: Text("Not Found Repository"));
+                    return const Center(child: Text("Not Found Repository"));
                   } else {
                     return ListView.builder(
                       itemCount: _repositories.length,
@@ -124,8 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         return Card(
                           // Add Card widget
                           elevation: 4, // Adjust elevation for shadow
-                          margin:
-                              EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 4, horizontal: 0),
                           child: ListTile(
                             title: Text(repository["full_name"]),
                             subtitle: Text(
@@ -155,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
 class RepositoryDetails extends StatelessWidget {
   final Map<String, dynamic> repository;
 
-  const RepositoryDetails({required this.repository});
+  const RepositoryDetails({super.key, required this.repository});
 
   @override
   Widget build(BuildContext context) {
@@ -167,26 +167,27 @@ class RepositoryDetails extends StatelessWidget {
     String ownerIconUrl = repository['owner']['avatar_url'];
 
     return Scaffold(
-      appBar: AppBar(title: Text("Repository Details")),
+      appBar: AppBar(title: const Text("Repository Details")),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Name: ${repository['full_name']}",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            SizedBox(height: 16),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
             CircleAvatar(
                 backgroundImage: NetworkImage(ownerIconUrl), radius: 36),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             language != null ? Text('Language: $language') : Container(),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text('Stars: $stars'),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text('Watchers: $watchers'),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text('Forks: $forks'),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text('Issues: $issues'),
           ],
         ),
