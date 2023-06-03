@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -39,15 +41,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -56,6 +49,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _textEditingController = TextEditingController();
+  List<dynamic> _repositories = [];
+  Future<List<dynamic>>? _futureRepositories;
+
+  Future<List<dynamic>> searchRepositories(String keywords) async {
+    String url = "https://api.github.com/search/repositories?q=$keywords";
+    http.Response response = await http.get(Uri.parse(url));
+    Map<String, dynamic> json = jsonDecode(response.body);
+    return json['items'];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,17 +78,52 @@ class _MyHomePageState extends State<MyHomePage> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 String keywords = _textEditingController.text;
-                print('User input: $keywords');
+                setState(() {
+                  _futureRepositories = searchRepositories(keywords);
+                });
               },
-              child: const Text('Submit'),
+              child: Text('Search'),
             ),
+            SizedBox(height: 16),
+            _buildRepositoriesList(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildRepositoriesList() {
+    return Expanded(
+      child: _futureRepositories == null
+          ? Container()
+          : FutureBuilder<List<dynamic>>(
+              future: _futureRepositories,
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<dynamic>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text("Error: ${snapshot.error}");
+                } else {
+                  _repositories = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: _repositories.length,
+                    itemBuilder: (context, index) {
+                      final repository = _repositories[index];
+                      return ListTile(
+                        title: Text(repository["full_name"]),
+                        subtitle:
+                            Text(repository["description"] ?? "No description"),
+                      );
+                    },
+                  );
+                }
+              },
+            ),
     );
   }
 }
