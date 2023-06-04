@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'repository_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,13 +37,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<dynamic> _repositories = [];
   Future<List<dynamic>>? _futureRepositories;
   String? _searchInputError;
-
-  Future<List<dynamic>> searchRepositories(String keywords) async {
-    String url = "https://api.github.com/search/repositories?q=$keywords";
-    http.Response response = await http.get(Uri.parse(url));
-    Map<String, dynamic> json = jsonDecode(response.body);
-    return json['items'];
-  }
 
   // Input Validation
   void _validateInput(String input) {
